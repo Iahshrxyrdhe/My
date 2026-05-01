@@ -13,7 +13,26 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from Pb2 import DEcwHisPErMsG_pb2, MajoRLoGinrEs_pb2, PorTs_pb2, MajoRLoGinrEq_pb2
 import google.protobuf.json_format as json_format
+from flask import Flask
+from threading import Thread
+import os
 
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is Running!"
+
+def run_web():
+    # Render port automatically handle karega
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
+
+def keep_alive():
+    t = Thread(target=run_web)
+    t.daemon = True
+    t.start()
+    
 def rot13(text):
     result = ""
     for c in text:
@@ -486,4 +505,13 @@ async def StarTinG():
             await asyncio.sleep(5)
 
 if __name__ == '__main__':
-    asyncio.run(StarTinG())
+    # Flask server start karega taaki Render error na de
+    keep_alive() 
+    
+    # Aapka bot logic start hoga
+    try:
+        asyncio.run(StarTinG())
+    except KeyboardInterrupt:
+        print("Bot manually stopped.")
+    except Exception as e:
+        print(f"Main Error: {e}")
